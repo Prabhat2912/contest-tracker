@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Contest Tracker
 
-## Getting Started
+## Development Stack
 
-First, run the development server:
+- **MERN** (MongoDB, Express.js, React, Node.js)
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Project Overview
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The Contest Tracker is a web application designed to fetch and display upcoming and past contests from popular competitive programming platforms such as Codeforces, CodeChef, and Leetcode. The application provides various features to enhance user experience and streamline contest tracking.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Features
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Upcoming Contests**: Fetches and displays all upcoming contests from Codeforces, CodeChef, and Leetcode.
+- **Contest Details**: Shows the date of the contest and the time remaining before it starts.
+- **Past Contests**: Displays past contests with an option to attach solution links from our YouTube channel.
+- **Platform Filter**: Allows users to filter contests by selecting one or more platforms (e.g., only Codeforces, or Codeforces + Leetcode).
+- **Bookmark Contests**: Users can bookmark contests for easy access.
+- **Solution Links**: Provides a separate URL with a form for team members to attach solution links from our YouTube channel to past contests.
+- **Automatic Link Fetching** (Bonus): Automatically fetches solution links from YouTube and adds them once the solution is uploaded.
+- **Responsive UI** (Bonus): The UI is mobile and tablet responsive.
+- **Light and Dark Mode** (Bonus): Includes a toggle option for light and dark modes.
+- **Well-Documented Code** (Bonus): The code is well documented for ease of understanding and maintenance.
 
-## Learn More
+## Documentation
 
-To learn more about Next.js, take a look at the following resources:
+### APIs
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Fetch Upcoming Contests**: API to fetch upcoming contests from Codeforces, CodeChef, and Leetcode.
+- **Fetch Past Contests**: API to fetch past contests and their details.
+- **Bookmark Contest**: API to bookmark a contest.
+- **Attach Solution Link**: API to attach a solution link to a past contest.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Interfaces
 
-## Deploy on Vercel
+- **Home Page**: Displays upcoming contests with filters and bookmark options.
+- **Past Contests Page**: Lists past contests with options to view and attach solution links.
+- **Admin Form Page**: A form for team members to attach solution links to past contests.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Implementation Details
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### Code Structure
+
+- **Backend**: The backend is built using Node.js and Express.js, with MongoDB as the database. It handles fetching contests from Codeforces, CodeChef, and Leetcode, and provides APIs for the frontend.
+- **Frontend**: The frontend is built using React and Next.js. It displays the contests, allows filtering, bookmarking, and attaching solution links.
+
+### Key Components
+
+- **ContestCard**: A React component that displays individual contest details, including name, platform, start time, and bookmark status.
+- **Filter**: A component that allows users to filter contests by platform and time (upcoming or past).
+- **AdminForm**: A form for team members to attach solution links to past contests.
+
+### APIs
+
+- **GET /api/getContests**: Fetches all contests from the database.
+- **POST /api/bookmark**: Bookmarks a contest for a user.
+- **POST /api/getSolutions**: Fetches solution links for contests from YouTube.
+
+### Database
+
+- **MongoDB**: Stores contest details, including platform, name, start time, end time, duration, URL, bookmarked users, and solution links.
+
+### Additional Features
+
+- **Automatic Link Fetching**: Uses YouTube API to automatically fetch and attach solution links to contests.
+- **Responsive Design**: The UI is designed to be responsive for mobile and tablet devices.
+- **Dark Mode**: Includes a toggle option for light and dark modes.
+
+### Documentation
+
+- **Code Documentation**: The code is well-documented with comments explaining the functionality of different parts.
+- **README**: Provides an overview of the project, features, APIs, interfaces, and submission details.
+
+### Demo
+
+- **Video Demonstration**: [Video Link](#)

@@ -138,11 +138,11 @@ export default function Page() {
     <div className='p-4 flex flex-col gap-4 w-full dark:text-white'>
       <Popover>
         <PopoverTrigger asChild>
-          <Button variant='outline' className='w-40'>
+          <Button variant='outline' className='w-full sm:w-40'>
             Filter Contests
           </Button>
         </PopoverTrigger>
-        <PopoverContent className='w-64 p-4'>
+        <PopoverContent className='w-full sm:w-64 p-4'>
           <h3 className='font-semibold mb-2'>Filter by:</h3>
           <div className='flex flex-col gap-2'>
             <div className='flex items-center gap-2'>
@@ -176,7 +176,7 @@ export default function Page() {
         </PopoverContent>
       </Popover>
       {loadingSolutions && <p>Loading solutions...</p>}
-      <div className='flex flex-wrap gap-4'>
+      <div className='grid max-lg:grid-cols-2 max-2xl:grid-cols-3  3xl:grid-cols-5 max-md:grid-cols-1 grid-cols-4 gap-4'>
         {filteredContests.length > 0 ? (
           filteredContests.map((contest, i) => (
             <ContestCard key={i} contests={contest} />
