@@ -37,7 +37,6 @@ export const metadata: Metadata = {
     url: domain,
     type: "website",
     siteName: title,
-
     images: [
       {
         url: domain + "/opengraph-image.png",

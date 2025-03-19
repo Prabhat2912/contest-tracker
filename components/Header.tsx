@@ -22,11 +22,15 @@ const Header = () => {
   const { isSignedIn } = useUser();
   return (
     <header className='flex justify-center items-center p-2.5 bg-gray-100 shadow-md rounded-lg dark:bg-black dark:text-white text-black'>
-      {theme == "dark" ? (
-        <Image src='/logo2.png' width={50} height={50} alt='Logo' />
-      ) : (
-        <Image src='/logo.png' width={50} height={50} alt='Logo' />
-      )}
+      <Link href={"/"}>
+        <Image
+          src={theme == "dark" ? "/logo2.png" : "/logo.png"}
+          width={50}
+          height={50}
+          className='transition-all duration-200  cursor-pointer'
+          alt='Logo'
+        />
+      </Link>
 
       <div className='flex justify-between items-center w-full '>
         <h1 className=' font-semibold text-2xl'>Contest Tracker</h1>
