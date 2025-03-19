@@ -74,11 +74,7 @@ export default function RootLayout({
       <ClerkProvider>
         <body className={`${geistSans.variable} ${geistMono.variable} `}>
           <Toaster richColors />
-          <ThemeProvider
-            attribute={"class"}
-            defaultTheme='system'
-            enableSystem={true}
-          >
+          <ThemeProvider attribute={"class"} enableSystem={true}>
             {children}
           </ThemeProvider>
         </body>
