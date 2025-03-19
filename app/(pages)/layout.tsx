@@ -6,7 +6,7 @@ export default function PageLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className='bg-gray-200 dark:bg-gray-900 '>
+    <div className='min-h-screen bg-gray-200 dark:bg-gray-900 '>
       <Header />
       {children}
     </div>
