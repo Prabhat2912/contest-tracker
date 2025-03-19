@@ -15,14 +15,14 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-const domain = process.env.NEXT_PUBLIC_BASE_URL || "";
+const domain = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
 const title = "Contest Tracker";
 const description =
   "Track competitive programming contests and their solutions";
 export const metadata: Metadata = {
   title: title,
   description: description,
-  metadataBase: new URL("/", domain),
+  metadataBase: new URL(domain),
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
