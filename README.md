@@ -73,5 +73,5 @@ The Contest Tracker is a web application designed to fetch and display upcoming 
 
 ### Demo
 
-- **Video Demonstration**: [https://drive.google.com/file/d/1QLEPPhfM3vRSk1cLtzPWCkkcGb7TtllO/view?usp=sharing]
+- **Video Demonstration**: [https://drive.google.com/file/d/1WgnJo1oVGVOcONRncB-vv_kMZC0343gA/view]
 - **Hosted Link**: [https://contests-tracker.vercel.app/]
