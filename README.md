@@ -16,19 +16,19 @@ The Contest Tracker is a web application designed to fetch and display upcoming 
 - **Platform Filter**: Allows users to filter contests by selecting one or more platforms (e.g., only Codeforces, or Codeforces + Leetcode).
 - **Bookmark Contests**: Users can bookmark contests for easy access.
 - **Solution Links**: Provides a separate URL with a form for team members to attach solution links from our YouTube channel to past contests.
-- **Automatic Link Fetching** (Bonus): Automatically fetches solution links from YouTube and adds them once the solution is uploaded.
-- **Responsive UI** (Bonus): The UI is mobile and tablet responsive.
-- **Light and Dark Mode** (Bonus): Includes a toggle option for light and dark modes.
-- **Well-Documented Code** (Bonus): The code is well documented for ease of understanding and maintenance.
+- **Automatic Link Fetching**: Automatically fetches solution links from YouTube and adds them once the solution is uploaded.
+- **Responsive UI**: The UI is mobile and tablet responsive.
+- **Light and Dark Mode**: Includes a toggle option for light and dark modes.
+- **Well-Documented Code**: The code is well documented for ease of understanding and maintenance.
 
 ## Documentation
 
 ### APIs
 
-- **Fetch Upcoming Contests**: API to fetch upcoming contests from Codeforces, CodeChef, and Leetcode.
-- **Fetch Past Contests**: API to fetch past contests and their details.
-- **Bookmark Contest**: API to bookmark a contest.
-- **Attach Solution Link**: API to attach a solution link to a past contest.
+- **GET /api/getContests**: Fetches all contests from the database.
+- **POST /api/bookmark**: Bookmarks a contest for a user.
+- **POST /api/getSolutions**: Fetches solution links for contests from YouTube.
+- **GET /api/contests**: Fetches contests from external APIs and saves them to the database.
 
 ### Interfaces
 
@@ -54,6 +54,7 @@ The Contest Tracker is a web application designed to fetch and display upcoming 
 - **GET /api/getContests**: Fetches all contests from the database.
 - **POST /api/bookmark**: Bookmarks a contest for a user.
 - **POST /api/getSolutions**: Fetches solution links for contests from YouTube.
+- **GET /api/contests**: Fetches contests from external APIs and saves them to the database.
 
 ### Database
 
@@ -72,6 +73,5 @@ The Contest Tracker is a web application designed to fetch and display upcoming 
 
 ### Demo
 
-### Demo
-
-- **Video Demonstration**: [https://drive.google.com/file/d/1QLEPPhfM3vRSk1cLtzPWCkkcGb7TtllO/view?usp=sharing](#)
+- **Video Demonstration**: [https://drive.google.com/file/d/1QLEPPhfM3vRSk1cLtzPWCkkcGb7TtllO/view?usp=sharing]
+- **Hosted Link**: [https://contests-tracker.vercel.app/]
