@@ -54,6 +54,8 @@ export async function POST(request: Request) {
           contest.solutionLink = solutionLink;
           await contest.save();
           updatedContests.push(contest);
+        } else {
+          console.log(`Solution link already exists for ${contestName}`);
         }
       }
     }

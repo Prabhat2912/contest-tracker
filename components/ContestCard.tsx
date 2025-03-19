@@ -14,8 +14,15 @@ import { Button } from "./ui/button";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
-const ContestCard = ({ contests }: { contests: contest }) => {
+const ContestCard = ({
+  contests,
+  setContests,
+}: {
+  contests: contest;
+  setContests: React.Dispatch<React.SetStateAction<contest[]>>;
+}) => {
   const { userId } = useAuth();
 
   const router = useRouter();
@@ -34,19 +41,45 @@ const ContestCard = ({ contests }: { contests: contest }) => {
         router.push("/sign-in");
         return;
       }
-
+      setBookmarked((prev) => !prev);
+      setContests((prevContests) =>
+        prevContests.map((contest) =>
+          contest.name === contests.name
+            ? {
+                ...contest,
+                bookmarkedBy: contest.bookmarkedBy?.includes(userId)
+                  ? contest.bookmarkedBy.filter((id) => id !== userId) // Remove bookmark
+                  : [...(contest.bookmarkedBy || []), userId], // Add bookmark
+              }
+            : contest
+        )
+      );
       const res = await axios.post("/api/bookmark", {
         contestName: contests.name,
         userId: userId,
       });
-      if (res.status === 200) {
-        setBookmarked(!bookmarked);
+
+      if (res.status !== 200) {
+        setBookmarked((prev) => !prev);
+        setContests((prevContests) =>
+          prevContests.map((contest) =>
+            contest.name === contests.name
+              ? {
+                  ...contest,
+                  bookmarkedBy: contest.bookmarkedBy?.includes(userId)
+                    ? [...(contest.bookmarkedBy || []), userId]
+                    : contest.bookmarkedBy?.filter((id) => id !== userId),
+                }
+              : contest
+          )
+        );
       }
-      console.log(res.data);
     } catch (error) {
-      console.error(error, "Error while bookmarking contest");
+      console.error("Error while bookmarking contest", error);
+      setBookmarked((prev) => !prev);
     }
   };
+
   return (
     <Card className='w-[368px] h-36  dark:bg-black  py-4 flex flex-col gap-1 '>
       <CardHeader className='flex flex-col gap-2  h-[65%]'>
@@ -62,13 +95,17 @@ const ContestCard = ({ contests }: { contests: contest }) => {
         <Link
           href={contests?.solutionLink || "#"}
           target='_blank'
-          className=' hover:underline hover:text-blue-500 transition-all duration-150 ease-in-out'
+          className=' hover:underline hover:text-blue-500 transition-all duration-200 ease-in-out'
         >
           Solution
         </Link>
         <Star
           onClick={() => {
-            bookmark();
+            toast.promise(bookmark(), {
+              loading: "Loading...",
+              success: bookmarked ? "Removed from bookmarks" : "Bookmarked",
+              error: "Error",
+            });
           }}
           className={`w-4 h-4 ${
             bookmarked ? "fill-current" : ""
