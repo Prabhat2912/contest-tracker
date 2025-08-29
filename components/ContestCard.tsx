@@ -97,9 +97,7 @@ const ContestCard = ({
           target="_blank"
           className=" hover:underline hover:text-blue-500 transition-all duration-200 ease-in-out"
         >
-          {contests?.solutionLink
-            ? "Solution"
-            : "No Solution"}
+          {contests?.solutionLink ? "Solution" : "No Solution"}
         </Link>
         <Star
           onClick={() => {

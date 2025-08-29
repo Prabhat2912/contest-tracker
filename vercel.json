@@ -9,15 +9,5 @@
     "app/api/contests/route.ts": {
       "maxDuration": 60
     }
-  },
-  "crons": [
-    {
-      "path": "/api/cron/update-contests-lite",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/fetch-solutions",
-      "schedule": "0 */6 * * *"
-    }
-  ]
+  }
 }
