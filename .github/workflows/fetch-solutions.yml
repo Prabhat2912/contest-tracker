@@ -12,5 +12,4 @@ jobs:
       - name: Fetch YouTube Solutions
         run: |
           curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json"

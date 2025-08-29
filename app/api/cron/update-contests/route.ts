@@ -6,10 +6,12 @@ export async function GET(request: Request) {
   try {
     console.log("[CRON] Starting daily contest update...");
 
-    // Verify this is coming from a cron service or authorized source
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Optional: Verify authorization if CRON_SECRET is set
+    if (process.env.CRON_SECRET) {
+      const authHeader = request.headers.get("authorization");
+      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
     }
 
     await getAllContests();
@@ -40,10 +42,12 @@ export async function POST(request: Request) {
   try {
     console.log("[CRON] Starting daily contest update via POST...");
 
-    // Verify authorization
-    const authHeader = request.headers.get("authorization");
-    if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    // Optional: Verify authorization if CRON_SECRET is set
+    if (process.env.CRON_SECRET) {
+      const authHeader = request.headers.get("authorization");
+      if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      }
     }
 
     await getAllContests();

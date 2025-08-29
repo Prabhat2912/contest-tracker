@@ -12,5 +12,4 @@ jobs:
       - name: Update Contest Data
         run: |
           curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests \
-            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json"
