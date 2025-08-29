@@ -10,7 +10,7 @@ const ContestSchema = new Schema(
     durationSeconds: { type: Number },
     duration: { type: String, required: true },
     url: { type: String, required: true },
-    solutionLinks: { type: [String], default: [] }, // Support multiple solution links
+    solutionLink: { type: String, default: "" }, // Support multiple solution links
     bookmarkedBy: { type: [String], default: [] },
     solutionFetched: { type: Boolean, default: false }, // Track if solution fetch was attempted
     lastSolutionCheck: { type: Date }, // Track when solution was last checked

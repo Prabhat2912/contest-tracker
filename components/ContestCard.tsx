@@ -93,11 +93,11 @@ const ContestCard = ({
       <CardContent className=" flex w-full justify-between items-center gap-2">
         <p className="w-[50%] ">{getTimeDifference(contests.startTime)}</p>
         <Link
-          href={contests?.solutionLinks?.[0] || "#"}
+          href={contests?.solutionLink?.[0] || "#"}
           target="_blank"
           className=" hover:underline hover:text-blue-500 transition-all duration-200 ease-in-out"
         >
-          {contests?.solutionLinks && contests.solutionLinks.length > 0
+          {contests?.solutionLink && contests.solutionLink.length > 0
             ? "Solution"
             : "No Solution"}
         </Link>

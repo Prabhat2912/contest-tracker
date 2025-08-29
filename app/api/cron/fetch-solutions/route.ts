@@ -41,8 +41,8 @@ export async function GET(request: Request) {
         },
         {
           $or: [
-            { solutionLinks: { $exists: false } },
-            { solutionLinks: { $size: 0 } },
+            { solutionLink: { $exists: false } },
+            { solutionLink: { $size: 0 } },
           ],
         },
       ],
@@ -64,7 +64,7 @@ export async function GET(request: Request) {
         if (solutionUrl) {
           // Update contest with solution link
           await Contest.findByIdAndUpdate(contest._id, {
-            $push: { solutionLinks: solutionUrl },
+            $push: { solutionLink: solutionUrl },
           });
 
           found++;

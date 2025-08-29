@@ -310,7 +310,7 @@ interface Contest {
   duration: number; // in seconds
   url: string;
   bookmarkedBy: ObjectId[]; // User IDs
-  solutionLinks: string[]; // YouTube URLs (multiple solutions supported)
+  solutionLink: string; // YouTube URLs (multiple solutions supported)
   solutionFetched: boolean; // Track if solution fetch was attempted
   lastSolutionCheck: Date; // Track when solution was last checked
   createdAt: Date;
