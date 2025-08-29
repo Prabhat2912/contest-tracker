@@ -17,14 +17,14 @@ export async function GET(request: Request) {
     }
     await connectDB();
 
-    // Find ALL contests that don't have solution links yet
+    // Find contests that don't have solution links yet (limit to 2 per run)
     const contestsWithoutSolutions = await Contest.find({
       $or: [
         { solutionLink: { $exists: false } },
         { solutionLink: "" },
         { solutionLink: { $eq: null } },
       ],
-    }).limit(50); // Limit to 50 contests to avoid timeout
+    }).limit(2); // Only process 2 contests per run to avoid timeout
 
     console.log(
       `[CRON] Found ${contestsWithoutSolutions.length} contests without solutions to process`
@@ -56,7 +56,7 @@ export async function GET(request: Request) {
         processed++;
 
         // Add a small delay to avoid rate limiting
-        await new Promise((resolve) => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 500)); // Reduced delay
       } catch (error) {
         console.error(`[CRON] Error processing ${contest.name}:`, error);
       }

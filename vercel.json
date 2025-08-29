@@ -4,7 +4,7 @@
       "maxDuration": 30
     },
     "app/api/cron/fetch-solutions/route.ts": {
-      "maxDuration": 60
+      "maxDuration": 30
     },
     "app/api/contests/route.ts": {
       "maxDuration": 60
