@@ -31,7 +31,7 @@ export async function GET() {
             durationSeconds: contest.durationSeconds,
             duration: `${Math.floor(contest.durationSeconds / 3600)} hours`,
             url: `https://codeforces.com/contests/${contest.id}`,
-            solutionLinks: [],
+            solutionLink: "",
             bookmarkedBy: [],
           })
         );

@@ -1,10 +1,23 @@
 {
   "functions": {
-    "app/api/cron/update-contests/route.ts": {
-      "maxDuration": 60
+    "app/api/cron/update-contests-lite/route.ts": {
+      "maxDuration": 30
     },
     "app/api/cron/fetch-solutions/route.ts": {
-      "maxDuration": 300
+      "maxDuration": 60
+    },
+    "app/api/contests/route.ts": {
+      "maxDuration": 60
     }
-  }
+  },
+  "crons": [
+    {
+      "path": "/api/cron/update-contests-lite",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/fetch-solutions",
+      "schedule": "0 */6 * * *"
+    }
+  ]
 }

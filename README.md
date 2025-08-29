@@ -3,23 +3,11 @@
 <div align="center">
   <img src="public/logo2.png" alt="Contest Tracker Logo" width="200" height="auto"/>
   
-    [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://contests-tracker.netlify.app/)
+  [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://contest-tracker-gamma-rust.vercel.app/)
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-  [![Next.js](https://img.shields.io/badge/Next.js-13+-black)](https://nextjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-# Manual contest update
-curl -X POST https://contests-tracker.netlify.app/api/cron/update-contests \
-  -H "Authorization: Bearer your_cron_secret"
-
-# Manual solution fetch
-
-curl -X POST https://contests-tracker.netlify.app/api/cron/fetch-solutions \
- -H "Authorization: Bearer your_cron_secret"
-
-# Check system status
-
-curl -X GET https://contests-tracker.netlify.app/api/cron/scheduler \
- -H "Authorization: Bearer your_cron_secret"ttps://www.typescriptlang.org/)
-[![MongoDB](https://img.shields.io/badge/MongoDB-6+-green)](https://www.mongodb.com/)
+  [![Next.js](https://img.shields.io/badge/Next.js-15+-black)](https://nextjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
+  [![MongoDB](https://img.shields.io/badge/MongoDB-6+-green)](https://www.mongodb.com/)
 
 </div>
 
@@ -203,7 +191,7 @@ Retrieves all contests from the database with filtering options.
       "duration": "number (seconds)",
       "url": "string",
       "bookmarkedBy": ["userId"],
-      "solutionLinks": ["youtube_url"]
+      "solutionLink": "youtube_url"
     }
   ]
 }
@@ -310,7 +298,7 @@ interface Contest {
   duration: number; // in seconds
   url: string;
   bookmarkedBy: ObjectId[]; // User IDs
-  solutionLink: string; // YouTube URLs (multiple solutions supported)
+  solutionLink: string; // YouTube URL for contest solution
   solutionFetched: boolean; // Track if solution fetch was attempted
   lastSolutionCheck: Date; // Track when solution was last checked
   createdAt: Date;
@@ -383,23 +371,23 @@ Contest data is fetched from:
 
 ## 🚀 Deployment
 
-### Netlify Deployment (Recommended)
+### Vercel Deployment (Recommended)
 
 1. **Connect Repository**
 
-   - Import project to Netlify
+   - Import project to Vercel
    - Connect GitHub repository
-   - Netlify will automatically detect Next.js
+   - Vercel automatically detects Next.js
 
 2. **Configure Environment Variables**
 
-   - Add all required environment variables in Netlify dashboard
-   - Go to Site settings → Environment variables
+   - Add all required environment variables in Vercel dashboard
+   - Go to Project Settings → Environment Variables
    - Ensure MongoDB connection is accessible
 
 3. **Deploy**
 
-   - Netlify automatically deploys on push to main branch
+   - Vercel automatically deploys on push to main branch
    - Custom domains can be configured
    - Next.js builds are handled automatically
 
@@ -444,11 +432,11 @@ Contest data is fetched from:
 
 1. Create account at [cron-job.org](https://cron-job.org)
 2. Add new cron job:
-   - **URL**: `https://contests-tracker.netlify.app/api/cron/update-contests`
+   - **URL**: `https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests`
    - **Schedule**: `0 0 * * *` (daily at midnight)
    - **Headers**: `Authorization: Bearer your_cron_secret`
 3. Add second job for solutions:
-   - **URL**: `https://contests-tracker.netlify.app/api/cron/fetch-solutions`
+   - **URL**: `https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions`
    - **Schedule**: `0 */6 * * *` (every 6 hours)
 
 **Other Services:**
@@ -480,15 +468,15 @@ Use the API endpoints for manual triggers and monitoring:
 
 ```bash
 # Manual contest update
-curl -X POST https://contests-tracker.netlify.app/api/cron/update-contests \
+curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests \
   -H "Content-Type: application/json"
 
 # Manual solution fetch
-curl -X POST https://contests-tracker.netlify.app/api/cron/fetch-solutions \
+curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions \
   -H "Content-Type: application/json"
 
 # Check system status
-curl -X GET https://contests-tracker.netlify.app/api/cron/scheduler \
+curl -X GET https://contest-tracker-gamma-rust.vercel.app/api/cron/scheduler \
   -H "Content-Type: application/json"
 ```
 
@@ -560,7 +548,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues**: [GitHub Issues](https://github.com/Prabhat2912/contest-tracker/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/Prabhat2912/contest-tracker/discussions)
-- **Demo**: [Live Application](https://contests-tracker.netlify.app/)
+- **Demo**: [Live Application](https://contest-tracker-gamma-rust.vercel.app/)
 
 ---
 
