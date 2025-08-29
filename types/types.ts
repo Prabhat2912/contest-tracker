@@ -9,5 +9,9 @@ export type contest = {
   duration: string;
   url: string;
   bookmarkedBy?: string[];
-  solutionLink?: string;
+  solutionLinks?: string[]; // Updated to support multiple solution links
+  solutionFetched?: boolean; // Track if solution fetch was attempted
+  lastSolutionCheck?: Date; // Track when solution was last checked
+  createdAt?: Date;
+  updatedAt?: Date;
 };

@@ -3,7 +3,7 @@
 <div align="center">
   <img src="public/logo2.png" alt="Contest Tracker Logo" width="200" height="auto"/>
   
-  [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://contests-tracker.vercel.app/)
+  [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://contest-tracker-gamma-rust.vercel.app/)
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
   [![Next.js](https://img.shields.io/badge/Next.js-13+-black)](https://nextjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
@@ -43,6 +43,14 @@ Contest Tracker is a comprehensive web application that aggregates and displays 
 - **📺 YouTube Integration**: Automated solution link fetching from YouTube channels
 - **👥 Team Management**: Admin interface for team members to attach solution videos
 - **🔄 Auto-sync**: Automatic detection and linking of new solution uploads
+
+### 🤖 Automation Features
+
+- **🕐 Daily Contest Updates**: Automated daily fetching of new contests from all platforms
+- **🎯 Smart Solution Detection**: Automatic YouTube solution searching after contests end
+- **📊 Intelligent Scheduling**: Configurable cron jobs for optimal data freshness
+- **🔍 Multi-Strategy Search**: Advanced algorithms for finding relevant solution videos
+- **⚡ Background Processing**: Non-blocking automated tasks with comprehensive logging
 
 ## 🛠️ Tech Stack
 
@@ -223,6 +231,58 @@ Fetches and links YouTube solution videos to contests.
 }
 ```
 
+### Automation Endpoints
+
+#### `GET/POST /api/cron/update-contests`
+
+**🔒 Requires Authorization**: `Bearer {CRON_SECRET}`
+
+Automated endpoint for daily contest updates.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "Contests updated successfully",
+  "timestamp": "ISO 8601 date"
+}
+```
+
+#### `GET/POST /api/cron/fetch-solutions`
+
+**🔒 Requires Authorization**: `Bearer {CRON_SECRET}`
+
+Automated endpoint for post-contest YouTube solution fetching.
+
+**Response:**
+
+```json
+{
+  "success": true,
+  "message": "YouTube solution fetch completed",
+  "processed": 5,
+  "solutionsFound": 3,
+  "timestamp": "ISO 8601 date"
+}
+```
+
+#### `GET/POST /api/cron/scheduler`
+
+**🔒 Requires Authorization**: `Bearer {CRON_SECRET}`
+
+Control and monitor automated schedulers.
+
+**POST Request Body:**
+
+```json
+{
+  "action": "start|stop|status|restart",
+  "contestUpdateHour": 0,
+  "contestUpdateMinute": 0
+}
+```
+
 ### Data Models
 
 #### Contest Schema
@@ -237,7 +297,9 @@ interface Contest {
   duration: number; // in seconds
   url: string;
   bookmarkedBy: ObjectId[]; // User IDs
-  solutionLinks: string[]; // YouTube URLs
+  solutionLinks: string[]; // YouTube URLs (multiple solutions supported)
+  solutionFetched: boolean; // Track if solution fetch was attempted
+  lastSolutionCheck: Date; // Track when solution was last checked
   createdAt: Date;
   updatedAt: Date;
 }
@@ -291,7 +353,11 @@ Implements dark/light mode switching with system preference detection.
 | `MONGODB_URI`                       | MongoDB connection string            | ✅       |
 | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | Clerk public key                     | ✅       |
 | `CLERK_SECRET_KEY`                  | Clerk private key                    | ✅       |
+| `CRON_SECRET`                       | Secure secret for cron job auth      | ✅       |
 | `YOUTUBE_API_KEY`                   | YouTube Data API key                 | ⚠️       |
+| `YOUTUBE_CHANNEL_ID`                | Default YouTube channel for search   | ⚠️       |
+| `CONTEST_UPDATE_HOUR`               | Hour for daily updates (0-23, UTC)   | ⚠️       |
+| `CONTEST_UPDATE_MINUTE`             | Minute for daily updates (0-59)      | ⚠️       |
 | `NODE_ENV`                          | Environment (development/production) | ⚠️       |
 
 ### API Configuration
@@ -317,8 +383,100 @@ Contest data is fetched from:
    - Ensure MongoDB connection is accessible
 
 3. **Deploy**
+
    - Vercel automatically deploys on push to main branch
    - Custom domains can be configured
+
+4. **Setup Automation** (Choose your option)
+   - **Recommended**: GitHub Actions (Free tier compatible)
+   - Vercel Pro: Cron jobs configured in `vercel.json` run automatically
+   - External services: cron-job.org, EasyCron, UptimeRobot
+   - Manual control: Use `/api/cron/scheduler` endpoints
+
+### Automation Setup Options
+
+#### Option 1: GitHub Actions (Recommended - Free)
+
+- ✅ **Free**: Works with any GitHub repository
+- ✅ **Reliable**: GitHub infrastructure
+- ✅ **Easy Setup**: Pre-configured workflow included
+- ✅ **Manual Control**: Can trigger manually anytime
+
+**Setup Steps:**
+
+1. Go to your GitHub repository settings → Secrets and Variables → Actions
+2. Add these repository secrets:
+   - `CRON_SECRET`: Your secure random string (same as in Vercel env vars)
+3. The automation workflows are already configured in `.github/workflows/`
+4. Push the workflows to GitHub - automation runs automatically!
+
+**Manual Triggers:**
+
+- Go to Actions tab in your GitHub repo
+- Select "Daily Contest Update" or "Fetch YouTube Solutions"
+- Click "Run workflow" button for manual execution
+
+#### Option 2: Vercel Cron Jobs (Pro Plan Only)
+
+- ✅ **Automatic**: Configured in `vercel.json`
+- ✅ **Reliable**: Managed by Vercel infrastructure
+- ❌ **Paid**: Requires Vercel Pro subscription
+
+#### Option 3: External Cron Services (Free Tier Alternatives)
+
+**cron-job.org Setup:**
+
+1. Create account at [cron-job.org](https://cron-job.org)
+2. Add new cron job:
+   - **URL**: `https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests`
+   - **Schedule**: `0 0 * * *` (daily at midnight)
+   - **Headers**: `Authorization: Bearer your_cron_secret`
+3. Add second job for solutions:
+   - **URL**: `https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions`
+   - **Schedule**: `0 */6 * * *` (every 6 hours)
+
+**Other Services:**
+
+- **EasyCron.com** - Free tier: 1 job
+- **UptimeRobot** - Monitor endpoints with HTTP checks
+
+**Example Setup** (cron-job.org):
+
+```
+Daily Contest Update:
+URL: https://your-app.vercel.app/api/cron/update-contests
+Method: POST
+Headers: Authorization: Bearer your_cron_secret
+Schedule: 0 0 * * * (daily at midnight)
+
+Solution Fetching:
+URL: https://your-app.vercel.app/api/cron/fetch-solutions
+Method: POST
+Headers: Authorization: Bearer your_cron_secret
+Schedule: 0 */6 * * * (every 6 hours)
+```
+
+**External Services**: Use cron-job.org, Uptime Robot, or similar services
+
+#### Option 4: Manual Control
+
+Use the API endpoints for manual triggers and monitoring:
+
+```bash
+# Manual contest update
+curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests \
+  -H "Authorization: Bearer your_cron_secret"
+
+# Manual solution fetch
+curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions \
+  -H "Authorization: Bearer your_cron_secret"
+
+# Check system status
+curl -X GET https://contest-tracker-gamma-rust.vercel.app/api/cron/scheduler \
+  -H "Authorization: Bearer your_cron_secret"
+```
+
+**📚 Complete Guide**: See `docs/FREE-TIER-AUTOMATION.md` for detailed free tier setup instructions.
 
 ### Manual Deployment
 
@@ -386,7 +544,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues**: [GitHub Issues](https://github.com/Prabhat2912/contest-tracker/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/Prabhat2912/contest-tracker/discussions)
-- **Demo**: [Live Application](https://contests-tracker.vercel.app/)
+- **Demo**: [Live Application](https://contest-tracker-gamma-rust.vercel.app/)
 
 ---
 

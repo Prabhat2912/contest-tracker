@@ -1,0 +1,16 @@
+name: Fetch YouTube Solutions
+on:
+  schedule:
+    # Run every 6 hours
+    - cron: "0 */6 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  fetch-solutions:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch YouTube Solutions
+        run: |
+          curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"

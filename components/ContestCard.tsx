@@ -81,23 +81,25 @@ const ContestCard = ({
   };
 
   return (
-    <Card className='w-[368px] h-36  dark:bg-black  py-4 flex flex-col gap-1 '>
-      <CardHeader className='flex flex-col gap-2  h-[65%]'>
+    <Card className="w-[368px] h-36  dark:bg-black  py-4 flex flex-col gap-1 ">
+      <CardHeader className="flex flex-col gap-2  h-[65%]">
         <CardTitle>{contests.name}</CardTitle>
         <CardDescription>
-          <Link href={formatUrl(contests.url)} target='_blank'>
+          <Link href={formatUrl(contests.url)} target="_blank">
             {contests.platform}
           </Link>
         </CardDescription>
       </CardHeader>
-      <CardContent className=' flex w-full justify-between items-center gap-2'>
-        <p className='w-[50%] '>{getTimeDifference(contests.startTime)}</p>
+      <CardContent className=" flex w-full justify-between items-center gap-2">
+        <p className="w-[50%] ">{getTimeDifference(contests.startTime)}</p>
         <Link
-          href={contests?.solutionLink || "#"}
-          target='_blank'
-          className=' hover:underline hover:text-blue-500 transition-all duration-200 ease-in-out'
+          href={contests?.solutionLinks?.[0] || "#"}
+          target="_blank"
+          className=" hover:underline hover:text-blue-500 transition-all duration-200 ease-in-out"
         >
-          Solution
+          {contests?.solutionLinks && contests.solutionLinks.length > 0
+            ? "Solution"
+            : "No Solution"}
         </Link>
         <Star
           onClick={() => {
@@ -111,10 +113,10 @@ const ContestCard = ({
             bookmarked ? "fill-current" : ""
           } cursor-pointer`}
         />
-        <Link href={contests.url} target='_blank'>
-          <Button className='    cursor-pointer flex gap-2 w-[80px] transition-all  ease-in group'>
+        <Link href={contests.url} target="_blank">
+          <Button className="    cursor-pointer flex gap-2 w-[80px] transition-all  ease-in group">
             Start
-            <ArrowRight className='group-hover:translate-x-1 transition-transform duration-200 ease-in-out' />
+            <ArrowRight className="group-hover:translate-x-1 transition-transform duration-200 ease-in-out" />
           </Button>
         </Link>
       </CardContent>

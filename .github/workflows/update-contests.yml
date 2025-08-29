@@ -1,0 +1,16 @@
+name: Daily Contest Update
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: "0 0 * * *"
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  update-contests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Update Contest Data
+        run: |
+          curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json"
