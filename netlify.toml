@@ -8,19 +8,7 @@
 [build.environment]
   NODE_VERSION = "20"
 
-# Redirect API routes to functions
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
-
-# SPA fallback for client-side routing
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-# Function settings
+# Function settings for better performance
 [functions]
   node_bundler = "esbuild"
   
