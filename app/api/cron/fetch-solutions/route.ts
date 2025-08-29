@@ -17,23 +17,33 @@ export async function GET(request: Request) {
     }
     await connectDB();
 
-    // Find contests that don't have solution links yet (limit to 2 per run)
-    const contestsWithoutSolutions = await Contest.find({
-      $or: [
-        { solutionLink: { $exists: false } },
-        { solutionLink: "" },
-        { solutionLink: { $eq: null } },
+    const now = new Date();
+    const currentTimeUnix = Math.floor(now.getTime() / 1000);
+
+    // Find contests that have already started and don't have solution links yet
+    const pastContestsWithoutSolutions = await Contest.find({
+      $and: [
+        // Contest start time is in the past
+        { startTimeUnix: { $lt: currentTimeUnix } },
+        // No solution link exists
+        {
+          $or: [
+            { solutionLink: { $exists: false } },
+            { solutionLink: "" },
+            { solutionLink: { $eq: null } },
+          ],
+        },
       ],
     }).limit(2); // Only process 2 contests per run to avoid timeout
 
     console.log(
-      `[CRON] Found ${contestsWithoutSolutions.length} contests without solutions to process`
+      `[CRON] Found ${pastContestsWithoutSolutions.length} past contests without solutions to process`
     );
 
     let processed = 0;
     let found = 0;
 
-    for (const contest of contestsWithoutSolutions) {
+    for (const contest of pastContestsWithoutSolutions) {
       try {
         console.log(`[CRON] Fetching solution for: ${contest.name}`);
 

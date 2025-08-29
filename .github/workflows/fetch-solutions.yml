@@ -1,8 +1,8 @@
-name: Fetch YouTube Solutions
+name: Fetch YouTube Solutions (Every Minute)
 on:
   schedule:
-    # Run every hour to process 2 solutions at a time
-    - cron: "0 * * * *"
+    # Run every minute to process solutions for past contests
+    - cron: "* * * * *"
   workflow_dispatch: # Allow manual trigger
 
 jobs:
