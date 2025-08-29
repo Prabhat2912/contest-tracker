@@ -11,5 +11,5 @@ jobs:
     steps:
       - name: Fetch YouTube Solutions
         run: |
-          curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions \
+          curl -X POST https://contests-tracker.netlify.app/api/cron/fetch-solutions \
             -H "Content-Type: application/json"

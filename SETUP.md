@@ -1,8 +1,8 @@
 # Contest Tracker - Free Tier Automation Setup Guide
 
-Your app is deployed at: **https://contest-tracker-gamma-rust.vercel.app/**
+Your app is deployed at: **https://contests-tracker.netlify.app/**
 
-Since you're using Vercel Free tier, here's how to set up automated contest updates and solution fetching using GitHub Actions (completely free).
+Since you're using Netlify, here's how to set up automated contest updates and solution fetching using GitHub Actions (completely free).
 
 ## 🚀 Quick Setup (5 minutes)
 
@@ -14,7 +14,7 @@ Since you're using Vercel Free tier, here's how to set up automated contest upda
 4. Click **New repository secret** and add:
    - **Name**: `CRON_SECRET`
    - **Value**: Generate a secure random string (e.g., use a password generator)
-   - Save this same value in your Vercel environment variables too
+   - Save this same value in your Netlify environment variables too
 
 ### Step 2: Verify Workflows
 
@@ -30,11 +30,11 @@ The automation workflows are already created in `.github/workflows/`:
 3. Click **"Daily Contest Update"** → **"Run workflow"** → **"Run workflow"** (green button)
 4. Watch it execute - it should show ✅ success
 
-### Step 4: Add Environment Variable to Vercel
+### Step 4: Add Environment Variable to Netlify
 
-1. Go to your Vercel dashboard
+1. Go to your Netlify dashboard
 2. Select your contest-tracker project
-3. Go to **Settings** → **Environment Variables**
+3. Go to **Site settings** → **Environment variables**
 4. Add: `CRON_SECRET` with the same value you used in GitHub
 
 ## 📅 Automation Schedule
@@ -56,16 +56,14 @@ The automation workflows are already created in `.github/workflows/`:
 ### Test Contest Updates
 
 ```bash
-curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests \
-  -H "Authorization: Bearer YOUR_CRON_SECRET" \
+curl -X POST https://contests-tracker.netlify.app/api/cron/update-contests \
   -H "Content-Type: application/json"
 ```
 
 ### Test Solution Fetching
 
 ```bash
-curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions \
-  -H "Authorization: Bearer YOUR_CRON_SECRET" \
+curl -X POST https://contests-tracker.netlify.app/api/cron/fetch-solutions \
   -H "Content-Type: application/json"
 ```
 
@@ -76,14 +74,14 @@ Replace `YOUR_CRON_SECRET` with the actual secret value.
 ### Check Automation Status
 
 - **GitHub Actions**: Go to Actions tab to see execution history
-- **Vercel Logs**: Check function logs in Vercel dashboard
+- **Netlify Logs**: Check function logs in Netlify dashboard
 - **API Response**: The endpoints return success/failure status
 
 ### Troubleshooting Common Issues
 
 1. **"Unauthorized" Error**
 
-   - Check that `CRON_SECRET` matches in both GitHub and Vercel
+   - Check that `CRON_SECRET` matches in both GitHub and Netlify
    - Ensure the secret is properly formatted (no extra spaces)
 
 2. **Workflow Not Running**
@@ -92,7 +90,7 @@ Replace `YOUR_CRON_SECRET` with the actual secret value.
    - Check if GitHub Actions are enabled in your repo settings
 
 3. **API Timeout**
-   - Vercel free tier has function timeout limits
+   - Netlify has function timeout limits for the free tier
    - Large contest updates might take time - this is normal
 
 ## 🎯 Expected Results
