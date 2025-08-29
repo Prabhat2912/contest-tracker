@@ -7,14 +7,15 @@ import { fetchYouTubeSolution } from "@/lib/fetchSolution";
 export async function GET(request: Request) {
   try {
     console.log("[CRON] Starting post-contest YouTube solution fetch...");
-    
+
     // Optional: Verify authorization if CRON_SECRET is set
     if (process.env.CRON_SECRET) {
       const authHeader = request.headers.get("authorization");
       if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
         return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
       }
-    }    await connectDB();
+    }
+    await connectDB();
 
     const now = new Date();
     const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
