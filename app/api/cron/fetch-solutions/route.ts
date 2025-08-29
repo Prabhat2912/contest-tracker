@@ -3,7 +3,7 @@ import { connectDB } from "@/db/db";
 import { Contest } from "@/db/model/contest.model";
 import { fetchYouTubeSolution } from "@/lib/fetchSolution";
 
-// API route for automated YouTube solution fetching after contests end
+// API route for automated YouTube solution fetching for all contests without solutions
 export async function GET(request: Request) {
   try {
     console.log("[CRON] Starting post-contest YouTube solution fetch...");
@@ -17,46 +17,23 @@ export async function GET(request: Request) {
     }
     await connectDB();
 
-    const now = new Date();
-    const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24 hours ago
-
-    // Find contests that ended in the last 24 hours and don't have solutions yet
-    const recentlyEndedContests = await Contest.find({
-      $and: [
-        {
-          $expr: {
-            $lt: [
-              { $add: ["$startTimeUnix", "$durationSeconds"] },
-              Math.floor(now.getTime() / 1000),
-            ],
-          },
-        },
-        {
-          $expr: {
-            $gt: [
-              { $add: ["$startTimeUnix", "$durationSeconds"] },
-              Math.floor(oneDayAgo.getTime() / 1000),
-            ],
-          },
-        },
-        {
-          $or: [
-            { solutionLink: { $exists: false } },
-            { solutionLink: "" },
-            { solutionLink: { $eq: null } },
-          ],
-        },
+    // Find ALL contests that don't have solution links yet
+    const contestsWithoutSolutions = await Contest.find({
+      $or: [
+        { solutionLink: { $exists: false } },
+        { solutionLink: "" },
+        { solutionLink: { $eq: null } },
       ],
-    });
+    }).limit(50); // Limit to 50 contests to avoid timeout
 
     console.log(
-      `[CRON] Found ${recentlyEndedContests.length} contests to process`
+      `[CRON] Found ${contestsWithoutSolutions.length} contests without solutions to process`
     );
 
     let processed = 0;
     let found = 0;
 
-    for (const contest of recentlyEndedContests) {
+    for (const contest of contestsWithoutSolutions) {
       try {
         console.log(`[CRON] Fetching solution for: ${contest.name}`);
 
