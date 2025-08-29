@@ -9,7 +9,7 @@ jobs:
   update-contests:
     runs-on: ubuntu-latest
     steps:
-      - name: Update Contest Data
+      - name: Update Contest Data (Lite)
         run: |
-          curl -X POST https://contests-tracker.netlify.app/api/cron/update-contests \
+          curl -X POST https://contests-tracker.netlify.app/api/cron/update-contests-lite \
             -H "Content-Type: application/json"
