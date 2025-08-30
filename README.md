@@ -28,24 +28,28 @@
 ## ✨ Core Features
 
 ### � Contest Management
+
 - **Multi-platform Aggregation**: Unified view of contests from Codeforces, CodeChef, and LeetCode
 - **Live Countdown Timers**: Real-time tracking until contest start
 - **Smart Filtering**: Filter by platform, date, and status
 - **Historical Data**: Archive of past contests with solutions
 
 ### � Automation System
+
 - **Daily Updates**: Automated contest data synchronization every 24 hours
 - **Solution Discovery**: Automatic YouTube solution fetching for contests that ended 2+ hours ago
 - **GitHub Actions**: Free-tier automation using GitHub workflows
 - **Smart Processing**: Efficient batch processing to avoid timeouts
 
 ### 👤 User Experience
+
 - **Responsive Design**: Optimized for all device sizes
 - **Bookmark System**: Personal contest management
 - **Theme Toggle**: Light/dark mode support
 - **Fast Navigation**: Optimized performance and loading times
 
 ### 🎥 Solution Integration
+
 - **YouTube API**: Automated solution video discovery
 - **Smart Matching**: Contest name-based solution searching
 - **Persistent Retry**: Continuous attempts until solutions are found
@@ -54,6 +58,7 @@
 ## 🛠️ Technology Stack
 
 ### Frontend
+
 - **Next.js 15**: React framework with App Router
 - **TypeScript**: Type-safe development
 - **Tailwind CSS**: Utility-first styling
@@ -61,12 +66,14 @@
 - **Clerk**: Authentication and user management
 
 ### Backend
+
 - **Next.js API Routes**: Server-side functionality
 - **MongoDB Atlas**: Cloud database
 - **Mongoose**: ODM for MongoDB
 - **YouTube Data API**: Solution video discovery
 
 ### Automation & Deployment
+
 - **GitHub Actions**: Free automation workflows
 - **Vercel**: Serverless deployment
 - **Cron Jobs**: Scheduled task execution
@@ -74,6 +81,7 @@
 ## 🚀 Quick Start
 
 ### Prerequisites
+
 - Node.js 20.8.0 or higher
 - MongoDB Atlas account
 - Clerk account for authentication
@@ -82,34 +90,38 @@
 ### Installation
 
 1. **Clone the repository**
+
    ```bash
    git clone https://github.com/Prabhat2912/contest-tracker.git
    cd contest-tracker
    ```
 
 2. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 3. **Environment Setup**
    Create `.env.local` file:
+
    ```env
    # Database
    MONGODB_URI=your_mongodb_connection_string
-   
+
    # Authentication
    NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
    CLERK_SECRET_KEY=your_clerk_secret_key
-   
+
    # YouTube API
    YOUTUBE_API_KEY=your_youtube_api_key
-   
+
    # Cron Security (optional)
    CRON_SECRET=your_secret_key
    ```
 
 4. **Run development server**
+
    ```bash
    npm run dev
    ```
@@ -119,30 +131,33 @@
 ## 🔧 Configuration
 
 ### Database Schema
+
 ```typescript
 interface Contest {
-  platform: string;           // "Codeforces" | "CodeChef" | "LeetCode"
-  name: string;               // Contest name
-  startTimeUnix: number;      // Start time (Unix timestamp)
-  startTime: string;          // ISO 8601 date string
-  endTime?: string;           // ISO 8601 end time
-  durationSeconds?: number;   // Contest duration
-  duration: string;           // Human readable duration
-  url: string;                // Contest URL
-  bookmarkedBy?: string[];    // User IDs who bookmarked
-  solutionLink: string;       // YouTube URL for contest solution
-  solutionFetched: boolean;   // Track if solution fetch was attempted
-  lastSolutionCheck?: Date;   // Last solution check timestamp
+  platform: string; // "Codeforces" | "CodeChef" | "LeetCode"
+  name: string; // Contest name
+  startTimeUnix: number; // Start time (Unix timestamp)
+  startTime: string; // ISO 8601 date string
+  endTime?: string; // ISO 8601 end time
+  durationSeconds?: number; // Contest duration
+  duration: string; // Human readable duration
+  url: string; // Contest URL
+  bookmarkedBy?: string[]; // User IDs who bookmarked
+  solutionLink: string; // YouTube URL for contest solution
+  solutionFetched: boolean; // Track if solution fetch was attempted
+  lastSolutionCheck?: Date; // Last solution check timestamp
 }
 ```
 
 ### API Endpoints
 
 #### Contest Management
+
 - `GET /api/contests` - Fetch all contests with filtering
 - `POST /api/bookmark` - Toggle contest bookmark
 
 #### Automation (Internal)
+
 - `POST /api/cron/update-contests-lite` - Daily contest updates
 - `POST /api/cron/fetch-solutions` - Solution discovery
 
@@ -151,12 +166,14 @@ interface Contest {
 ### GitHub Actions Workflows
 
 #### Daily Contest Updates
+
 - **Schedule**: Every 24 hours at midnight UTC
 - **Function**: Fetches latest contests from all platforms
 - **Processing**: Up to 10 contests per run
 - **Timeout**: 30 seconds maximum
 
-#### Solution Fetching  
+#### Solution Fetching
+
 - **Schedule**: Every minute
 - **Function**: Finds YouTube solutions for contests ended 2+ hours ago
 - **Processing**: 2 contests per run
@@ -165,28 +182,32 @@ interface Contest {
 ### Manual Triggers
 
 **Via GitHub Actions:**
+
 1. Go to your repository's Actions tab
 2. Select the desired workflow
 3. Click "Run workflow"
 
 **Via API:**
+
 ```bash
 # Update contests
 curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests-lite
 
-# Fetch solutions  
+# Fetch solutions
 curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions
 ```
 
 ## 📊 Performance & Limits
 
 ### Vercel Hobby Plan Optimizations
+
 - **Function Timeout**: 30 seconds maximum
 - **No Vercel Cron**: Uses GitHub Actions instead
 - **Batch Processing**: Limited operations per request
 - **Smart Retries**: Efficient error handling
 
 ### Rate Limiting
+
 - **YouTube API**: 10,000 requests/day quota
 - **Contest APIs**: Cached responses, minimal calls
 - **Database**: Optimized queries with indexing
@@ -201,12 +222,15 @@ curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-soluti
 ## 🚀 Deployment
 
 ### Vercel Deployment
+
 1. Connect repository to Vercel
 2. Configure environment variables
 3. Deploy automatically on push to main
 
 ### Environment Variables Setup
+
 Add these to your Vercel project:
+
 - `MONGODB_URI`
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
 - `CLERK_SECRET_KEY`
@@ -225,6 +249,7 @@ Add these to your Vercel project:
 We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting pull requests.
 
 ### Development Process
+
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
