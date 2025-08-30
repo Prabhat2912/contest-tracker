@@ -3,7 +3,7 @@ import { connectDB } from "@/db/db";
 import { Contest } from "@/db/model/contest.model";
 import { fetchYouTubeSolution } from "@/lib/fetchSolution";
 
-// API route for automated YouTube solution fetching for all contests without solutions
+// API route for automated YouTube solution fetching for contests that ended 2+ hours ago
 export async function GET(request: Request) {
   try {
     console.log("[CRON] Starting post-contest YouTube solution fetch...");
@@ -19,12 +19,27 @@ export async function GET(request: Request) {
 
     const now = new Date();
     const currentTimeUnix = Math.floor(now.getTime() / 1000);
+    const twoHoursInSeconds = 2 * 60 * 60; // 2 hours in seconds
 
-    // Find contests that have already started and don't have solution links yet
-    const pastContestsWithoutSolutions = await Contest.find({
+    // Find contests that ended at least 2 hours ago and haven't had solutions fetched
+    const contestsNeedingSolutions = await Contest.find({
       $and: [
-        // Contest start time is in the past
-        { startTimeUnix: { $lt: currentTimeUnix } },
+        // Contest has ended at least 2 hours ago
+        {
+          $expr: {
+            $lt: [
+              { $add: ["$startTimeUnix", "$durationSeconds"] }, // Contest end time
+              currentTimeUnix - twoHoursInSeconds, // 2 hours ago
+            ],
+          },
+        },
+        // Solution hasn't been fetched yet
+        {
+          $or: [
+            { solutionFetched: { $exists: false } },
+            { solutionFetched: false },
+          ],
+        },
         // No solution link exists
         {
           $or: [
@@ -37,22 +52,23 @@ export async function GET(request: Request) {
     }).limit(2); // Only process 2 contests per run to avoid timeout
 
     console.log(
-      `[CRON] Found ${pastContestsWithoutSolutions.length} past contests without solutions to process`
+      `[CRON] Found ${contestsNeedingSolutions.length} contests that ended 2+ hours ago without solutions to process`
     );
 
     let processed = 0;
     let found = 0;
 
-    for (const contest of pastContestsWithoutSolutions) {
+    for (const contest of contestsNeedingSolutions) {
       try {
         console.log(`[CRON] Fetching solution for: ${contest.name}`);
 
         const solutionUrl = await fetchYouTubeSolution(contest.name);
 
         if (solutionUrl) {
-          // Update contest with solution link
+          // Update contest with solution link and mark as fetched
           await Contest.findByIdAndUpdate(contest._id, {
             solutionLink: solutionUrl,
+            solutionFetched: true,
           });
 
           found++;
@@ -60,7 +76,8 @@ export async function GET(request: Request) {
             `[CRON] Found solution for ${contest.name}: ${solutionUrl}`
           );
         } else {
-          console.log(`[CRON] No solution found for: ${contest.name}`);
+          // Don't mark as fetched if no solution found - we'll try again later
+          console.log(`[CRON] No solution found for: ${contest.name} - will retry later`);
         }
 
         processed++;
