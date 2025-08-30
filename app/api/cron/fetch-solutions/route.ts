@@ -64,7 +64,9 @@ export async function GET(request: Request) {
 
         const solutionUrl = await fetchYouTubeSolution(contest.name);
 
-        if (solutionUrl) {
+        console.log(`[CRON] Fetched solution URL: ${solutionUrl}`);
+
+        if (solutionUrl != "" && solutionUrl != null) {
           // Update contest with solution link and mark as fetched
           await Contest.findByIdAndUpdate(contest._id, {
             solutionLink: solutionUrl,
@@ -77,7 +79,9 @@ export async function GET(request: Request) {
           );
         } else {
           // Don't mark as fetched if no solution found - we'll try again later
-          console.log(`[CRON] No solution found for: ${contest.name} - will retry later`);
+          console.log(
+            `[CRON] No solution found for: ${contest.name} - will retry later`
+          );
         }
 
         processed++;

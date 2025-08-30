@@ -31,6 +31,14 @@ export async function fetchYouTubeSolution(
   channelId?: string
 ): Promise<string | null> {
   try {
+    console.log(`[YouTube] Starting search for: ${contestName}`);
+    console.log(`[YouTube] API Key present: ${!!YOUTUBE_API_KEY}`);
+
+    if (!YOUTUBE_API_KEY) {
+      console.error("[YouTube] No API key found!");
+      return null;
+    }
+
     // Create more specific search queries
     const searchQueries = [
       `${contestName} ${platform || ""} solution editorial`,
@@ -40,6 +48,8 @@ export async function fetchYouTubeSolution(
     ];
 
     for (const query of searchQueries) {
+      console.log(`[YouTube] Searching for: "${query}"`);
+
       const params: YouTubeSearchParams = {
         key: YOUTUBE_API_KEY!,
         q: query.trim(),
@@ -59,7 +69,10 @@ export async function fetchYouTubeSolution(
 
       const response = await axios.get(YOUTUBE_SEARCH_URL, { params });
 
-      const videos: YouTubeVideo[] = response.data.items;
+      console.log(`[YouTube] API Response status: ${response.status}`);
+      console.log(`[YouTube] Found ${response.data.items?.length || 0} videos`);
+
+      const videos: YouTubeVideo[] = response.data.items || [];
 
       if (videos.length > 0) {
         // Find the most relevant video based on title similarity
@@ -78,20 +91,26 @@ export async function fetchYouTubeSolution(
         });
 
         if (bestMatch) {
-          console.log(`Found YouTube solution: ${bestMatch.snippet.title}`);
+          console.log(`[YouTube] Found best match: ${bestMatch.snippet.title}`);
           return `https://www.youtube.com/watch?v=${bestMatch.id.videoId}`;
         }
 
         // If no perfect match, return the first result
-        console.log(`Using first result: ${videos[0].snippet.title}`);
+        console.log(`[YouTube] Using first result: ${videos[0].snippet.title}`);
         return `https://www.youtube.com/watch?v=${videos[0].id.videoId}`;
       }
+
+      console.log(`[YouTube] No results for query: "${query}"`);
     }
 
-    console.log(`No YouTube solution found for: ${contestName}`);
+    console.log(`[YouTube] No solution found for: ${contestName}`);
     return null;
   } catch (error) {
-    console.error("Error fetching YouTube solutions:", error);
+    console.error("[YouTube] Error details:", error);
+    if (axios.isAxiosError(error)) {
+      console.error("[YouTube] Status:", error.response?.status);
+      console.error("[YouTube] Response:", error.response?.data);
+    }
     return null;
   }
 }

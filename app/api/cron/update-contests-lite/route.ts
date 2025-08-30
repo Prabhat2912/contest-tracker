@@ -7,27 +7,29 @@ import { contest } from "@/types/types";
 // Lightweight API route for automated daily contest updates from all platforms
 export async function GET() {
   try {
-    console.log("[CRON] Starting lightweight contest update from all platforms...");
+    console.log(
+      "[CRON] Starting lightweight contest update from all platforms..."
+    );
 
     await connectDB();
 
     // Fetch from all platforms with reduced limits and timeouts
     const [codeforces, leetcode, codechef] = await Promise.allSettled([
       fetchCodeforcesContests(),
-      fetchLeetcodeContests(), 
+      fetchLeetcodeContests(),
       fetchCodechefContests(),
     ]);
 
     let allContests: contest[] = [];
 
     // Process successful results
-    if (codeforces.status === 'fulfilled') {
+    if (codeforces.status === "fulfilled") {
       allContests.push(...codeforces.value);
     }
-    if (leetcode.status === 'fulfilled') {
+    if (leetcode.status === "fulfilled") {
       allContests.push(...leetcode.value);
     }
-    if (codechef.status === 'fulfilled') {
+    if (codechef.status === "fulfilled") {
       allContests.push(...codechef.value);
     }
 
@@ -63,10 +65,11 @@ export async function GET() {
       processed: allContests.length,
       saved: savedCount,
       sources: {
-        codeforces: codeforces.status === 'fulfilled' ? codeforces.value.length : 0,
-        leetcode: leetcode.status === 'fulfilled' ? leetcode.value.length : 0,
-        codechef: codechef.status === 'fulfilled' ? codechef.value.length : 0,
-      }
+        codeforces:
+          codeforces.status === "fulfilled" ? codeforces.value.length : 0,
+        leetcode: leetcode.status === "fulfilled" ? leetcode.value.length : 0,
+        codechef: codechef.status === "fulfilled" ? codechef.value.length : 0,
+      },
     });
   } catch (error) {
     console.error("[CRON] Error updating contests:", error);
@@ -84,9 +87,12 @@ export async function GET() {
 // Optimized Codeforces fetcher with timeout
 async function fetchCodeforcesContests(): Promise<contest[]> {
   try {
-    const response = await axios.get("https://codeforces.com/api/contest.list", {
-      timeout: 8000, // 8 second timeout
-    });
+    const response = await axios.get(
+      "https://codeforces.com/api/contest.list",
+      {
+        timeout: 8000, // 8 second timeout
+      }
+    );
 
     if (response.data.status !== "OK") {
       throw new Error("Failed to fetch Codeforces contests");
@@ -94,23 +100,28 @@ async function fetchCodeforcesContests(): Promise<contest[]> {
 
     return response.data.result
       .slice(0, 8) // Only take first 8 contests
-      .map((contest: {
-        id: number;
-        name: string;
-        phase: string;
-        startTimeSeconds: number;
-        durationSeconds: number;
-      }) => ({
-        platform: "Codeforces",
-        name: contest.name,
-        startTimeUnix: contest.startTimeSeconds,
-        startTime: new Date(contest.startTimeSeconds * 1000).toISOString(),
-        durationSeconds: contest.durationSeconds,
-        duration: `${Math.floor(contest.durationSeconds / 3600)} hours`,
-        url: `https://codeforces.com/contests/${contest.id}`,
-      }));
+      .map(
+        (contest: {
+          id: number;
+          name: string;
+          phase: string;
+          startTimeSeconds: number;
+          durationSeconds: number;
+        }) => ({
+          platform: "Codeforces",
+          name: contest.name,
+          startTimeUnix: contest.startTimeSeconds,
+          startTime: new Date(contest.startTimeSeconds * 1000).toISOString(),
+          durationSeconds: contest.durationSeconds,
+          duration: `${Math.floor(contest.durationSeconds / 3600)} hours`,
+          url: `https://codeforces.com/contests/${contest.id}`,
+        })
+      );
   } catch (error) {
-    console.error("Error fetching Codeforces contests:", (error as Error).message);
+    console.error(
+      "Error fetching Codeforces contests:",
+      (error as Error).message
+    );
     return [];
   }
 }
@@ -131,29 +142,38 @@ async function fetchLeetcodeContests(): Promise<contest[]> {
       `,
     };
 
-    const response = await axios.post("https://leetcode.com/graphql", graphqlQuery, {
-      headers: { "Content-Type": "application/json" },
-      timeout: 8000, // 8 second timeout
-    });
+    const response = await axios.post(
+      "https://leetcode.com/graphql",
+      graphqlQuery,
+      {
+        headers: { "Content-Type": "application/json" },
+        timeout: 8000, // 8 second timeout
+      }
+    );
 
     return response.data.data.allContests
       .slice(0, 8) // Only take first 8 contests
-      .map((contest: {
-        title: string;
-        startTime: number;
-        duration: number;
-        titleSlug: string;
-      }) => ({
-        platform: "LeetCode",
-        name: contest.title,
-        startTimeUnix: contest.startTime,
-        startTime: new Date(contest.startTime * 1000).toISOString(),
-        durationSeconds: contest.duration,
-        duration: `${Math.floor(contest.duration / 3600)} hours`,
-        url: `https://leetcode.com/contest/${contest.titleSlug}`,
-      }));
+      .map(
+        (contest: {
+          title: string;
+          startTime: number;
+          duration: number;
+          titleSlug: string;
+        }) => ({
+          platform: "LeetCode",
+          name: contest.title,
+          startTimeUnix: contest.startTime,
+          startTime: new Date(contest.startTime * 1000).toISOString(),
+          durationSeconds: contest.duration,
+          duration: `${Math.floor(contest.duration / 3600)} hours`,
+          url: `https://leetcode.com/contest/${contest.titleSlug}`,
+        })
+      );
   } catch (error) {
-    console.error("Error fetching LeetCode contests:", (error as Error).message);
+    console.error(
+      "Error fetching LeetCode contests:",
+      (error as Error).message
+    );
     return [];
   }
 }
@@ -161,9 +181,12 @@ async function fetchLeetcodeContests(): Promise<contest[]> {
 // Optimized CodeChef fetcher with timeout
 async function fetchCodechefContests(): Promise<contest[]> {
   try {
-    const response = await axios.get("https://www.codechef.com/api/list/contests/all", {
-      timeout: 8000, // 8 second timeout
-    });
+    const response = await axios.get(
+      "https://www.codechef.com/api/list/contests/all",
+      {
+        timeout: 8000, // 8 second timeout
+      }
+    );
 
     if (!response.data.future_contests) {
       throw new Error("Failed to fetch CodeChef contests");
@@ -171,22 +194,32 @@ async function fetchCodechefContests(): Promise<contest[]> {
 
     return response.data.future_contests
       .slice(0, 4) // Only take first 4 contests
-      .map((contest: {
-        contest_name: string;
-        contest_code: string;
-        contest_start_date: string;
-        contest_end_date: string;
-      }) => ({
-        platform: "CodeChef",
-        name: contest.contest_name,
-        startTimeUnix: Math.floor(new Date(contest.contest_start_date).getTime() / 1000),
-        startTime: new Date(contest.contest_start_date).toISOString(),
-        endTime: new Date(contest.contest_end_date).toISOString(),
-        duration: calculateDuration(contest.contest_start_date, contest.contest_end_date),
-        url: `https://www.codechef.com/${contest.contest_code}`,
-      }));
+      .map(
+        (contest: {
+          contest_name: string;
+          contest_code: string;
+          contest_start_date: string;
+          contest_end_date: string;
+        }) => ({
+          platform: "CodeChef",
+          name: contest.contest_name,
+          startTimeUnix: Math.floor(
+            new Date(contest.contest_start_date).getTime() / 1000
+          ),
+          startTime: new Date(contest.contest_start_date).toISOString(),
+          endTime: new Date(contest.contest_end_date).toISOString(),
+          duration: calculateDuration(
+            contest.contest_start_date,
+            contest.contest_end_date
+          ),
+          url: `https://www.codechef.com/${contest.contest_code}`,
+        })
+      );
   } catch (error) {
-    console.error("Error fetching CodeChef contests:", (error as Error).message);
+    console.error(
+      "Error fetching CodeChef contests:",
+      (error as Error).message
+    );
     return [];
   }
 }

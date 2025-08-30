@@ -8,47 +8,247 @@
   [![Next.js](https://img.shields.io/badge/Next.js-15+-black)](https://nextjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
   [![MongoDB](https://img.shields.io/badge/MongoDB-6+-green)](https://www.mongodb.com/)
+  [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://vercel.com/)
 
 </div>
 
 ## 📖 Overview
 
-Contest Tracker is a comprehensive web application that aggregates and displays programming contests from multiple platforms including **Codeforces**, **CodeChef**, and **LeetCode**. Built with modern web technologies, it provides developers with a centralized hub to track upcoming competitions, bookmark favorites, and access solution resources.
+**Contest Tracker** is a comprehensive web application that aggregates and displays programming contests from multiple platforms including **Codeforces**, **CodeChef**, and **LeetCode**. Built with modern web technologies and featuring full automation, it provides developers with a centralized hub to track competitions, bookmark favorites, and access solution resources.
 
-### 🎯 Key Highlights
+### 🎯 Key Features
 
-- **Real-time Contest Aggregation** from multiple platforms
-- **Smart Filtering & Bookmarking** system
-- **Solution Integration** with YouTube links
-- **Responsive Design** with dark/light theme support
-- **Modern Tech Stack** with Next.js and TypeScript
+- **🔄 Automated Contest Updates**: Daily synchronization with Codeforces, CodeChef, and LeetCode APIs
+- **🎯 Smart Solution Fetching**: Automatic YouTube solution discovery for completed contests
+- **📊 Real-time Data**: Live contest countdowns and status updates
+- **🔖 Personal Bookmarks**: Save and manage your favorite contests
+- **🌓 Modern UI/UX**: Responsive design with dark/light theme support
+- **🚀 High Performance**: Optimized with Next.js 15 and server-side rendering
 
-## ✨ Features
+## ✨ Core Features
 
-### 🔍 Contest Management
+### � Contest Management
+- **Multi-platform Aggregation**: Unified view of contests from Codeforces, CodeChef, and LeetCode
+- **Live Countdown Timers**: Real-time tracking until contest start
+- **Smart Filtering**: Filter by platform, date, and status
+- **Historical Data**: Archive of past contests with solutions
 
-- **📅 Upcoming Contests**: Real-time fetching and display of contests from Codeforces, CodeChef, and LeetCode
-- **⏰ Countdown Timers**: Live countdown showing time remaining until contest start
-- **📋 Past Contests**: Archive of completed contests with solution attachments
-- **🔖 Bookmark System**: Save contests for quick access and personalized tracking
+### � Automation System
+- **Daily Updates**: Automated contest data synchronization every 24 hours
+- **Solution Discovery**: Automatic YouTube solution fetching for contests that ended 2+ hours ago
+- **GitHub Actions**: Free-tier automation using GitHub workflows
+- **Smart Processing**: Efficient batch processing to avoid timeouts
 
-### 🎛️ User Experience
+### 👤 User Experience
+- **Responsive Design**: Optimized for all device sizes
+- **Bookmark System**: Personal contest management
+- **Theme Toggle**: Light/dark mode support
+- **Fast Navigation**: Optimized performance and loading times
 
-- **🌐 Platform Filtering**: Multi-select platform filters (Codeforces, CodeChef, LeetCode)
-- **📱 Responsive Design**: Optimized for desktop, tablet, and mobile devices
-- **🌙 Theme Toggle**: Switch between light and dark modes
-- **⚡ Fast Loading**: Optimized performance with server-side rendering
+### 🎥 Solution Integration
+- **YouTube API**: Automated solution video discovery
+- **Smart Matching**: Contest name-based solution searching
+- **Persistent Retry**: Continuous attempts until solutions are found
+- **Quality Filtering**: Relevant solution video identification
 
-### 🔗 Solution Integration
+## 🛠️ Technology Stack
 
-- **📺 YouTube Integration**: Automated solution link fetching from YouTube channels
-- **👥 Team Management**: Admin interface for team members to attach solution videos
-- **🔄 Auto-sync**: Automatic detection and linking of new solution uploads
+### Frontend
+- **Next.js 15**: React framework with App Router
+- **TypeScript**: Type-safe development
+- **Tailwind CSS**: Utility-first styling
+- **Shadcn/ui**: Modern component library
+- **Clerk**: Authentication and user management
 
-### 🤖 Automation Features
+### Backend
+- **Next.js API Routes**: Server-side functionality
+- **MongoDB Atlas**: Cloud database
+- **Mongoose**: ODM for MongoDB
+- **YouTube Data API**: Solution video discovery
 
-- **🕐 Daily Contest Updates**: Automated daily fetching of new contests from all platforms
-- **🎯 Smart Solution Detection**: Automatic YouTube solution searching after contests end
+### Automation & Deployment
+- **GitHub Actions**: Free automation workflows
+- **Vercel**: Serverless deployment
+- **Cron Jobs**: Scheduled task execution
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 20.8.0 or higher
+- MongoDB Atlas account
+- Clerk account for authentication
+- YouTube Data API key
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Prabhat2912/contest-tracker.git
+   cd contest-tracker
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Environment Setup**
+   Create `.env.local` file:
+   ```env
+   # Database
+   MONGODB_URI=your_mongodb_connection_string
+   
+   # Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your_clerk_publishable_key
+   CLERK_SECRET_KEY=your_clerk_secret_key
+   
+   # YouTube API
+   YOUTUBE_API_KEY=your_youtube_api_key
+   
+   # Cron Security (optional)
+   CRON_SECRET=your_secret_key
+   ```
+
+4. **Run development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Visit** `http://localhost:3000`
+
+## 🔧 Configuration
+
+### Database Schema
+```typescript
+interface Contest {
+  platform: string;           // "Codeforces" | "CodeChef" | "LeetCode"
+  name: string;               // Contest name
+  startTimeUnix: number;      // Start time (Unix timestamp)
+  startTime: string;          // ISO 8601 date string
+  endTime?: string;           // ISO 8601 end time
+  durationSeconds?: number;   // Contest duration
+  duration: string;           // Human readable duration
+  url: string;                // Contest URL
+  bookmarkedBy?: string[];    // User IDs who bookmarked
+  solutionLink: string;       // YouTube URL for contest solution
+  solutionFetched: boolean;   // Track if solution fetch was attempted
+  lastSolutionCheck?: Date;   // Last solution check timestamp
+}
+```
+
+### API Endpoints
+
+#### Contest Management
+- `GET /api/contests` - Fetch all contests with filtering
+- `POST /api/bookmark` - Toggle contest bookmark
+
+#### Automation (Internal)
+- `POST /api/cron/update-contests-lite` - Daily contest updates
+- `POST /api/cron/fetch-solutions` - Solution discovery
+
+## 🤖 Automation System
+
+### GitHub Actions Workflows
+
+#### Daily Contest Updates
+- **Schedule**: Every 24 hours at midnight UTC
+- **Function**: Fetches latest contests from all platforms
+- **Processing**: Up to 10 contests per run
+- **Timeout**: 30 seconds maximum
+
+#### Solution Fetching  
+- **Schedule**: Every minute
+- **Function**: Finds YouTube solutions for contests ended 2+ hours ago
+- **Processing**: 2 contests per run
+- **Smart Logic**: Only processes contests with `solutionFetched: false`
+
+### Manual Triggers
+
+**Via GitHub Actions:**
+1. Go to your repository's Actions tab
+2. Select the desired workflow
+3. Click "Run workflow"
+
+**Via API:**
+```bash
+# Update contests
+curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests-lite
+
+# Fetch solutions  
+curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions
+```
+
+## 📊 Performance & Limits
+
+### Vercel Hobby Plan Optimizations
+- **Function Timeout**: 30 seconds maximum
+- **No Vercel Cron**: Uses GitHub Actions instead
+- **Batch Processing**: Limited operations per request
+- **Smart Retries**: Efficient error handling
+
+### Rate Limiting
+- **YouTube API**: 10,000 requests/day quota
+- **Contest APIs**: Cached responses, minimal calls
+- **Database**: Optimized queries with indexing
+
+## � Security
+
+- **API Authentication**: Optional CRON_SECRET for automation endpoints
+- **User Authentication**: Clerk-based secure login
+- **Environment Variables**: Sensitive data protection
+- **Input Validation**: Server-side data validation
+
+## 🚀 Deployment
+
+### Vercel Deployment
+1. Connect repository to Vercel
+2. Configure environment variables
+3. Deploy automatically on push to main
+
+### Environment Variables Setup
+Add these to your Vercel project:
+- `MONGODB_URI`
+- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
+- `CLERK_SECRET_KEY`
+- `YOUTUBE_API_KEY`
+- `CRON_SECRET` (optional)
+
+## 📈 Monitoring
+
+- **GitHub Actions**: Monitor automation workflows
+- **Vercel Analytics**: Performance and usage metrics
+- **MongoDB Atlas**: Database performance monitoring
+- **Error Logging**: Console-based error tracking
+
+## 🤝 Contributing
+
+We welcome contributions! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting pull requests.
+
+### Development Process
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## 🔗 Links
+
+- **Live Demo**: [contest-tracker-gamma-rust.vercel.app](https://contest-tracker-gamma-rust.vercel.app/)
+- **Repository**: [GitHub](https://github.com/Prabhat2912/contest-tracker)
+- **Issues**: [Report Issues](https://github.com/Prabhat2912/contest-tracker/issues)
+- **Discussions**: [GitHub Discussions](https://github.com/Prabhat2912/contest-tracker/discussions)
+
+---
+
+<div align="center">
+  Made with ❤️ by <a href="https://github.com/Prabhat2912">Prabhat Kumar</a>
+  <br />
+  <sub>⭐ Star this repository if you find it helpful!</sub>
+</div>
 - **📊 Intelligent Scheduling**: Configurable cron jobs for optimal data freshness
 - **🔍 Multi-Strategy Search**: Advanced algorithms for finding relevant solution videos
 - **⚡ Background Processing**: Non-blocking automated tasks with comprehensive logging
