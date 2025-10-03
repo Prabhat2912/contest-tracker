@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "cron:update-contests": "tsx scripts/update-contests.ts",
+    "cron:fetch-solutions": "tsx scripts/fetch-solutions.ts"
   },
   "dependencies": {
     "@clerk/nextjs": "^6.12.5",
@@ -38,6 +40,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.2",
+    "tsx": "^4.19.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

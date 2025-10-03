@@ -3,23 +3,24 @@
 <div align="center">
   <img src="public/logo2.png" alt="Contest Tracker Logo" width="200" height="auto"/>
   
-  [![Live Demo](https://img.shields.io/badge/Live-Demo-brightgreen)](https://contest-tracker-gamma-rust.vercel.app/)
+   <!-- Live demo badge removed (deployment now self-hosted) -->
   [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
   [![Next.js](https://img.shields.io/badge/Next.js-15+-black)](https://nextjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5+-blue)](https://www.typescriptlang.org/)
   [![MongoDB](https://img.shields.io/badge/MongoDB-6+-green)](https://www.mongodb.com/)
-  [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://vercel.com/)
+   <!-- Deployment badge intentionally generic after migration from Vercel -->
+   [![Deployment](https://img.shields.io/badge/Deploy-DigitalOcean-blue)](https://www.digitalocean.com/)
 
 </div>
 
 ## 📖 Overview
 
-**Contest Tracker** is a comprehensive web application that aggregates and displays programming contests from multiple platforms including **Codeforces**, **CodeChef**, and **LeetCode**. Built with modern web technologies and featuring full automation, it provides developers with a centralized hub to track competitions, bookmark favorites, and access solution resources.
+**Contest Tracker** is a comprehensive web application that aggregates and displays programming contests from multiple platforms including **Codeforces**, **CodeChef**, and **LeetCode**. Built with modern web technologies and featuring flexible self‑hosted automation (DigitalOcean friendly), it provides developers with a centralized hub to track competitions, bookmark favorites, and access solution resources.
 
 ### 🎯 Key Features
 
-- **🔄 Automated Contest Updates**: Daily synchronization with Codeforces, CodeChef, and LeetCode APIs
-- **🎯 Smart Solution Fetching**: Automatic YouTube solution discovery for completed contests
+- **🔄 Automated Contest Updates**: Daily synchronization (self‑hosted cron via Linux crontab)
+- **🎯 Smart Solution Fetching**: Scheduled YouTube solution discovery for completed contests
 - **📊 Real-time Data**: Live contest countdowns and status updates
 - **🔖 Personal Bookmarks**: Save and manage your favorite contests
 - **🌓 Modern UI/UX**: Responsive design with dark/light theme support
@@ -34,12 +35,12 @@
 - **Smart Filtering**: Filter by platform, date, and status
 - **Historical Data**: Archive of past contests with solutions
 
-### � Automation System
+### ⚙️ Automation System
 
-- **Daily Updates**: Automated contest data synchronization every 24 hours
-- **Solution Discovery**: Automatic YouTube solution fetching for contests that ended 2+ hours ago
-- **GitHub Actions**: Free-tier automation using GitHub workflows
-- **Smart Processing**: Efficient batch processing to avoid timeouts
+- **Daily Updates**: Contest synchronization every 24 hours (configurable)
+- **Solution Discovery**: YouTube solution fetching for contests ended 2+ hours ago
+- **Lightweight Scripts**: Standalone Node scripts runnable via cron (`scripts/update-contests.ts`, `scripts/fetch-solutions.ts`)
+- **Resource Friendly**: Batches + timeouts to stay within small Droplet limits
 
 ### 👤 User Experience
 
@@ -74,9 +75,9 @@
 
 ### Automation & Deployment
 
-- **GitHub Actions**: Free automation workflows
-- **Vercel**: Serverless deployment
-- **Cron Jobs**: Scheduled task execution
+- **DigitalOcean Droplet**: Node + PM2 + Nginx reverse proxy
+- **Cron Jobs**: Native Linux crontab for scheduling
+- **PM2**: Process manager with log rotation & restarts
 
 ## 🚀 Quick Start
 
@@ -161,50 +162,57 @@ interface Contest {
 - `POST /api/cron/update-contests-lite` - Daily contest updates
 - `POST /api/cron/fetch-solutions` - Solution discovery
 
-## 🤖 Automation System
+## 🤖 Automation System (Self‑Hosted)
 
-### GitHub Actions Workflows
+| Task           | Script                         | Recommended Schedule      | Purpose                       |
+| -------------- | ------------------------------ | ------------------------- | ----------------------------- |
+| Contest Update | `npm run cron:update-contests` | Daily (e.g. 00:10)        | Pull fresh contests & persist |
+| Solution Fetch | `npm run cron:fetch-solutions` | Every 15 mins (or hourly) | Attach YouTube solution links |
 
-#### Daily Contest Updates
+### How It Works
 
-- **Schedule**: Every 24 hours at midnight UTC
-- **Function**: Fetches latest contests from all platforms
-- **Processing**: Up to 10 contests per run
-- **Timeout**: 30 seconds maximum
+1. Cron invokes a Node script (no HTTP cold starts)
+2. Script connects to MongoDB, fetches + upserts
+3. Solution script searches YouTube only for contests that ended ≥2h ago and have no `solutionLink`
+4. Safe batching prevents quota exhaustion / CPU spikes
 
-#### Solution Fetching
+### Add Cron Jobs (Linux)
 
-- **Schedule**: Every minute
-- **Function**: Finds YouTube solutions for contests ended 2+ hours ago
-- **Processing**: 2 contests per run
-- **Smart Logic**: Only processes contests with `solutionFetched: false`
-
-### Manual Triggers
-
-**Via GitHub Actions:**
-
-1. Go to your repository's Actions tab
-2. Select the desired workflow
-3. Click "Run workflow"
-
-**Via API:**
+Edit crontab:
 
 ```bash
-# Update contests
-curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests-lite
-
-# Fetch solutions
-curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions
+crontab -e
 ```
+
+Example (UTC):
+
+```cron
+# m h dom mon dow command
+10 0 * * * cd /var/www/contest-tracker && /usr/bin/npm run cron:update-contests >> logs/cron.log 2>&1
+*/15 * * * * cd /var/www/contest-tracker && /usr/bin/npm run cron:fetch-solutions >> logs/cron.log 2>&1
+```
+
+Create log dir:
+
+```bash
+mkdir -p /var/www/contest-tracker/logs
+```
+
+Adjust frequency if YouTube quota approaches limits (each run is very light).
 
 ## 📊 Performance & Limits
 
-### Vercel Hobby Plan Optimizations
+### Resource Guidance (1–2 GB Droplet)
 
-- **Function Timeout**: 30 seconds maximum
-- **No Vercel Cron**: Uses GitHub Actions instead
-- **Batch Processing**: Limited operations per request
-- **Smart Retries**: Efficient error handling
+- Contest update script typical runtime: < 5s
+- Solution fetch script: ~1–3s (per batch of ≤5)
+- Memory footprint: < 200MB during spikes
+- Add swap (1–2 GB) for 1 GB droplets to avoid OOM:
+
+```bash
+fallocate -l 2G /swapfile && chmod 600 /swapfile && mkswap /swapfile && swapon /swapfile
+echo '/swapfile swap swap defaults 0 0' >> /etc/fstab
+```
 
 ### Rate Limiting
 
@@ -221,26 +229,114 @@ curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-soluti
 
 ## 🚀 Deployment
 
-### Vercel Deployment
+### DigitalOcean Deployment (Droplet)
 
-1. Connect repository to Vercel
-2. Configure environment variables
-3. Deploy automatically on push to main
+#### 1. Provision Droplet
 
-### Environment Variables Setup
+Choose Ubuntu 22.04 LTS (Basic / Regular / 1–2 GB RAM).
 
-Add these to your Vercel project:
+#### 2. Secure & Update
 
-- `MONGODB_URI`
-- `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`
-- `CLERK_SECRET_KEY`
-- `YOUTUBE_API_KEY`
-- `CRON_SECRET` (optional)
+```bash
+adduser deploy
+usermod -aG sudo deploy
+ssh-copy-id deploy@your_server_ip
+sudo apt update && sudo apt upgrade -y
+sudo ufw allow OpenSSH
+sudo ufw allow 80
+sudo ufw allow 443
+sudo ufw enable
+```
+
+#### 3. Install Stack
+
+```bash
+curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+sudo apt install -y nodejs git nginx
+sudo npm i -g pm2
+```
+
+#### 4. Clone & Install
+
+```bash
+cd /var/www
+sudo git clone https://github.com/Prabhat2912/contest-tracker.git
+sudo chown -R deploy:deploy contest-tracker
+cd contest-tracker
+npm install
+```
+
+#### 5. Environment Variables
+
+Create `.env.local`:
+
+```bash
+nano .env.local
+```
+
+(Paste required keys – see Environment Section above)
+
+#### 6. Build & Start
+
+```bash
+npm run build
+pm2 start "npm run start" --name contest-tracker
+pm2 save
+pm2 startup systemd
+```
+
+#### 7. Reverse Proxy (Nginx)
+
+```bash
+sudo tee /etc/nginx/sites-available/contest-tracker <<'EOF'
+server {
+   server_name your_domain.com;
+   listen 80;
+   location / {
+      proxy_pass http://127.0.0.1:3000;
+      proxy_http_version 1.1;
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection 'upgrade';
+      proxy_set_header Host $host;
+      proxy_cache_bypass $http_upgrade;
+   }
+}
+EOF
+sudo ln -s /etc/nginx/sites-available/contest-tracker /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+#### 8. SSL (Let's Encrypt)
+
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d your_domain.com
+```
+
+#### 9. Add Cron Jobs
+
+(See Automation System section)
+
+#### 10. Logs & Monitoring
+
+```bash
+pm2 logs contest-tracker
+pm2 list
+tail -f logs/cron.log
+```
+
+### DigitalOcean App Platform (Alternative)
+
+- Push repo → DO App Platform → Build command: `npm run build` → Run command: `npm run start`
+- Configure environment variables in dashboard
+- Use DO "Jobs" or external cron for script execution
 
 ## 📈 Monitoring
 
-- **GitHub Actions**: Monitor automation workflows
-- **Vercel Analytics**: Performance and usage metrics
+- **PM2**: Process uptime & restart tracking
+- **Nginx Logs**: Access & error logs
+- **MongoDB Atlas**: Database performance monitoring
+- **Custom Cron Logs**: Output appended to `logs/cron.log`
 - **MongoDB Atlas**: Database performance monitoring
 - **Error Logging**: Console-based error tracking
 
@@ -262,7 +358,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🔗 Links
 
-- **Live Demo**: [contest-tracker-gamma-rust.vercel.app](https://contest-tracker-gamma-rust.vercel.app/)
+<!-- Former Vercel demo retired after migration; section removed for clarity -->
+
 - **Repository**: [GitHub](https://github.com/Prabhat2912/contest-tracker)
 - **Issues**: [Report Issues](https://github.com/Prabhat2912/contest-tracker/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/Prabhat2912/contest-tracker/discussions)
@@ -304,7 +401,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ### Deployment & Tools
 
-- **[Vercel](https://vercel.com/)** - Frontend deployment and hosting
+<!-- Removed Vercel hosting reference after migration to self-hosted DigitalOcean deployment -->
+
 - **ESLint & Prettier** - Code formatting and linting
 - **TypeScript Strict Mode** - Enhanced type checking
 
@@ -596,116 +694,7 @@ Contest data is fetched from:
 
 ## 🚀 Deployment
 
-### Vercel Deployment (Recommended)
-
-1. **Connect Repository**
-
-   - Import project to Vercel
-   - Connect GitHub repository
-   - Vercel automatically detects Next.js
-
-2. **Configure Environment Variables**
-
-   - Add all required environment variables in Vercel dashboard
-   - Go to Project Settings → Environment Variables
-   - Ensure MongoDB connection is accessible
-
-3. **Deploy**
-
-   - Vercel automatically deploys on push to main branch
-   - Custom domains can be configured
-   - Next.js builds are handled automatically
-
-4. **Setup Automation** (Choose your option)
-   - **Recommended**: GitHub Actions (Free tier compatible)
-   - Vercel Pro: Cron jobs configured in `vercel.json` run automatically
-   - External services: cron-job.org, EasyCron, UptimeRobot
-   - Manual control: Use `/api/cron/scheduler` endpoints
-
-### Automation Setup Options
-
-#### Option 1: GitHub Actions (Recommended - Free)
-
-- ✅ **Free**: Works with any GitHub repository
-- ✅ **Reliable**: GitHub infrastructure
-- ✅ **Easy Setup**: Pre-configured workflow included
-- ✅ **Manual Control**: Can trigger manually anytime
-
-**Setup Steps:**
-
-1. Go to your GitHub repository settings → Secrets and Variables → Actions
-2. Add these repository secrets:
-   - `CRON_SECRET`: Your secure random string (same as in Vercel env vars)
-3. The automation workflows are already configured in `.github/workflows/`
-4. Push the workflows to GitHub - automation runs automatically!
-
-**Manual Triggers:**
-
-- Go to Actions tab in your GitHub repo
-- Select "Daily Contest Update" or "Fetch YouTube Solutions"
-- Click "Run workflow" button for manual execution
-
-#### Option 2: Vercel Cron Jobs (Pro Plan Only)
-
-- ✅ **Automatic**: Configured in `vercel.json`
-- ✅ **Reliable**: Managed by Vercel infrastructure
-- ❌ **Paid**: Requires Vercel Pro subscription
-
-#### Option 3: External Cron Services (Free Tier Alternatives)
-
-**cron-job.org Setup:**
-
-1. Create account at [cron-job.org](https://cron-job.org)
-2. Add new cron job:
-   - **URL**: `https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests`
-   - **Schedule**: `0 0 * * *` (daily at midnight)
-   - **Headers**: `Authorization: Bearer your_cron_secret`
-3. Add second job for solutions:
-   - **URL**: `https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions`
-   - **Schedule**: `0 */6 * * *` (every 6 hours)
-
-**Other Services:**
-
-- **EasyCron.com** - Free tier: 1 job
-- **UptimeRobot** - Monitor endpoints with HTTP checks
-
-**Example Setup** (cron-job.org):
-
-```
-Daily Contest Update:
-URL: https://your-app.vercel.app/api/cron/update-contests
-Method: POST
-Headers: Authorization: Bearer your_cron_secret
-Schedule: 0 0 * * * (daily at midnight)
-
-Solution Fetching:
-URL: https://your-app.vercel.app/api/cron/fetch-solutions
-Method: POST
-Headers: Authorization: Bearer your_cron_secret
-Schedule: 0 */6 * * * (every 6 hours)
-```
-
-**External Services**: Use cron-job.org, Uptime Robot, or similar services
-
-#### Option 4: Manual Control
-
-Use the API endpoints for manual triggers and monitoring:
-
-```bash
-# Manual contest update
-curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/update-contests \
-  -H "Content-Type: application/json"
-
-# Manual solution fetch
-curl -X POST https://contest-tracker-gamma-rust.vercel.app/api/cron/fetch-solutions \
-  -H "Content-Type: application/json"
-
-# Check system status
-curl -X GET https://contest-tracker-gamma-rust.vercel.app/api/cron/scheduler \
-  -H "Content-Type: application/json"
-```
-
-**📚 Complete Guide**: See `docs/FREE-TIER-AUTOMATION.md` for detailed free tier setup instructions.
+<!-- Removed legacy Vercel/GitHub Actions/External cron service documentation after migration -->
 
 ### Manual Deployment
 
