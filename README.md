@@ -591,21 +591,7 @@ Automated endpoint for post-contest YouTube solution fetching.
 }
 ```
 
-#### `GET/POST /api/cron/scheduler`
-
-**🔒 Requires Authorization**: `Bearer {CRON_SECRET}`
-
-Control and monitor automated schedulers.
-
-**POST Request Body:**
-
-```json
-{
-  "action": "start|stop|status|restart",
-  "contestUpdateHour": 0,
-  "contestUpdateMinute": 0
-}
-```
+<!-- Removed deprecated /api/cron/scheduler endpoint (legacy in-app scheduler replaced by external cron scripts) -->
 
 ### Data Models
 
