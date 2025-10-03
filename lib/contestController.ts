@@ -14,7 +14,7 @@ export const getAllContests = async () => {
 
     const allContests: contest[] = [...codeforces, ...leetcode, ...codechef]
       .sort((a, b) => b.startTimeUnix - a.startTimeUnix)
-      .slice(0, 200);
+      .slice(0, 300);
     await saveContestsToDB(allContests);
 
     return NextResponse.json({
